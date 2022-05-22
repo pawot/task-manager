@@ -1,0 +1,129 @@
+from threading import activeCount
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+from django.db import IntegrityError
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
+
+from .models import User, Category, Task
+
+
+def index(request):
+    """ Render index page or user's tasks if user is authenticated """
+
+    if request.user.is_authenticated:
+        user = User.objects.get(pk=request.user.id)
+        activeTasks = user.userTasks.filter(active=True)
+        finishedTasks = user.userTasks.filter(active=False)
+        return render(request, "tasks/my_tasks.html", {
+            "activeTasks": activeTasks,
+            "finishedTasks": finishedTasks,
+        })
+    else:
+        return render(request, "tasks/index.html")
+
+def register(request):
+    """ Register new user in the app """
+
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+
+        if password != confirmation:
+            return render(request, "tasks/register.html", {
+                "message": "Passwords must match."
+            })
+        try:
+            user = User.objects.create_user(username, password)
+            user.save()
+        except IntegrityError:
+            return render(request, "tasks/register.html", {
+                "message": "This username already exist."
+            })
+        login(request, user)
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        return render(request, "tasks/register.html")
+
+
+def login_view(request):
+    """ Log user in the app if username and password are correct """
+
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "tasks/login.html", {
+                "message": "Invalid username and/or password."
+            })
+    else:
+        return render(request, "tasks/login.html")
+
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect(reverse("index"))
+
+@login_required
+def task_change(request, task_id):
+    """ Set active field in Task model to false or true  """
+
+    task = Task.objects.get(pk=task_id)
+    user = User.objects.get(pk=request.user.id)
+    activeTasks = user.userTasks.filter(active=True)
+    if task in activeTasks: 
+        task.active = False
+        task.save()
+    else:
+        task.active = True
+        task.save()
+    return HttpResponseRedirect(reverse("index"))
+
+@login_required
+def delete(request, task_id):
+    """ Remove task from database """
+    task = Task.objects.get(pk=task_id)
+    task.delete()
+    return HttpResponseRedirect(reverse("index"))
+
+@login_required
+def new_task(request):
+    """ Add new task to database """
+
+    if request.method == "POST":
+        title = request.POST["title"]
+        category_id = int(request.POST["category"])
+        category = Category.objects.get(pk=category_id)
+        deadline = request.POST["deadline"]
+        user = User.objects.get(pk=request.user.id)
+
+        task = Task(title=title, category=category, deadline=deadline, user=user, active=True)
+        task.save()
+        return HttpResponseRedirect(reverse("index"))
+    
+    categories = Category.objects.all()
+    return render(request, "tasks/new_task.html", {
+        "categories": categories
+    })
+
+@login_required
+def category(request, category_name):
+    """ Display tasks in particular category """
+
+    category = Category.objects.get(name=category_name)
+    tasks = category.categoryTasks.all()
+    activeTasks = tasks.filter(active=True)
+    finishedTasks = tasks.filter(active=False)
+
+    return render(request, "tasks/category_tasks.html", {
+            "activeTasks": activeTasks,
+            "finishedTasks": finishedTasks,
+            "category": category
+        })

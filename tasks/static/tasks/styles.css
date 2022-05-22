@@ -1,0 +1,85 @@
+
+
+span {
+    display: none;
+}
+
+body {
+    padding: 1rem;
+}
+
+.intro {
+    margin: 0;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.intro-links {
+    display: flex;
+    justify-content: space-around;
+}
+
+h1 {
+    margin: 2rem 0;
+    color: rgb(43, 43, 182);
+}
+
+.tasks-menu {
+    margin: 0 1rem 1rem 0;
+}
+
+.task-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+form {
+    width: 30vw;
+}
+
+.login-info {
+    float: right;
+    padding: 1rem;
+    background-color: rgb(236, 234, 234);
+    border-radius: 5px;
+}
+
+@media (max-width: 530px) {
+    
+
+    span {
+        display: inline-block;
+        width: 6rem;
+        font-weight: bold;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .intro-links {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .login-info {
+        display: inline-block;
+        float: none;
+    }
+
+    .table th { 
+		display: none;
+	}
+
+    .table tr { 
+		display: flex;
+        flex-direction: column; 
+	}
+
+    form {
+        width: 90vw;
+    }
+    
+}

@@ -1,0 +1,56 @@
+{% extends "tasks/layout.html" %}
+
+{% block body %}
+
+    <h1>My tasks</h1>
+    <a class="btn btn-primary tasks-menu" href="{% url 'new_task' %}">New task</a>
+    <table class="table table-hover">
+        <thead>
+            <th scope="col">Title</th>
+            <th scope="col">Category</th>
+            <th scope="col">Created</th>
+            <th scope="col">Deadline</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </thead>
+        <tbody>
+
+            {% for task in activeTasks %}
+                <tr>
+                    <td><span>Title:</span>{{ task.title }}</td>
+                    <td><span>Category:</span><a href="{% url 'category' task.category %}">{{ task.category }}</a></td>
+                    <td><span>Created:</span>{{ task.date }}</td>
+                    <td><span>Deadline:</span>{{ task.deadline }}</td>
+                    <div>
+                    <td>
+                        <a href="{% url 'task_change' task.id %}" class="btn btn-primary">Finish</a>
+
+                    </td>
+                    <td>
+                        <a href="{% url 'delete' task.id %}" class="btn btn-danger">Delete</a>
+
+                    </td>
+                    </div>
+                </tr>
+            {% endfor %}
+
+            {% for task in finishedTasks %}
+                <tr class="table-success">
+                    <td><span>Title:</span>{{ task.title }}</td>
+                    <td><span>Category:</span><a href="{% url 'category' task.category %}">{{ task.category }}</a></td>
+                    <td><span>Created:</span>{{ task.date }}</td>
+                    <td><span>Deadline:</span>{{ task.deadline }}</td>
+                    <div>
+                    <td>
+                        <a href="{% url 'task_change' task.id %}" class="btn btn-secondary">Activate</a>
+                        
+                    </td>
+                    <td>
+                        <a href="{% url 'delete' task.id %}" class="btn btn-danger">Delete</a>
+                    </td>
+                    </div>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

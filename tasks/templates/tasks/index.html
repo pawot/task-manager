@@ -1,0 +1,14 @@
+{% extends "tasks/layout.html" %}
+
+{% block body %}
+
+    <div class="intro">
+        <h1>Task manager</h1>
+        
+        <div class="intro-links">
+            <a class="btn btn-primary" href="{% url 'login' %}">Login</a>
+            <a class="btn btn-primary" href="{% url 'register' %}">Register</a>
+        </div>
+    </div>
+
+{% endblock %}
