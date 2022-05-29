@@ -15,7 +15,7 @@
         </thead>
         <tbody>
 
-            {% for task in activeTasks %}
+            {% for task in tasks.activeTasks %}
                 <tr>
                     <td><span>Title:</span>{{ task.title }}</td>
                     <td><span>Category:</span><a href="{% url 'category' task.category %}">{{ task.category }}</a></td>
@@ -34,7 +34,7 @@
                 </tr>
             {% endfor %}
 
-            {% for task in finishedTasks %}
+            {% for task in tasks.finishedTasks %}
                 <tr class="table-success">
                     <td><span>Title:</span>{{ task.title }}</td>
                     <td><span>Category:</span><a href="{% url 'category' task.category %}">{{ task.category }}</a></td>
